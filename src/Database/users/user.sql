@@ -88,3 +88,34 @@ BEGIN
 END;
 $BODY$
 --  PROCEDURE TO SEND USER EMAIL after sending a parcel
+
+
+-- SELECT ALL USERS 
+CREATE OR REPLACE PROCEDURE public.selectAllUsers()
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN 
+	SELECT * FROM public.users WHERE isDeleted = 'no';
+END;
+$body$
+-- END OF SELECT ALL USERS 
+
+-- select user 
+
+-- CREATE OR REPLACE PROCEDURE public.selectAllUsers(
+-- 	INOUT jsonOut json DEFAULT NULL::json 
+-- )
+-- LANGUAGE 'plpgsql'
+-- AS $BODY$
+-- BEGIN 
+-- 	SELECT * FROM public.users;
+-- 	RETURNING row_to_json(public.users.*)
+--     INTO jsonOut;
+-- END;
+-- $BODY$;
+
+-- end of select users 
+
+-- example of calling selectusers 
+CALL public.selectAllUsers();
+-- end of example calling users 

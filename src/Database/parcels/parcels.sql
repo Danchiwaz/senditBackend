@@ -8,7 +8,7 @@ CREATE TABLE parcels(
 	fromlocation VARCHAR(255) NOT NULL,
 	tolocation VARCHAR(255) NOT NULL,
 	status VARCHAR(255) DEFAULT 'onDelivery',
-    trackingNo VARCHAR(255) NOT NULL,
+  trackingNo VARCHAR(255) NOT NULL,
 	isdeleted VARCHAR(255) DEFAULT 'no'
 )
 -- end of create 
@@ -18,7 +18,7 @@ CREATE OR REPLACE PROCEDURE public.parcelSave(
     IN parcelId uuid DEFAULT NULL::uuid,
     IN thesender character varying DEFAULT NULL::character,
     IN thereceiver character varying DEFAULT NULL::character,
-    IN theweight integer DEFAULT NULL::integer,
+    IN theweight character DEFAULT NULL::character,
     IN theprice integer DEFAULT NULL::integer,
     IN thefromlocation json DEFAULT NULL::json,
     IN thetolocation json DEFAULT NULL::json,
@@ -126,3 +126,35 @@ CALL public.changeParcelStatus(
 	1
 );
 -- end example executing store procedure to change the status of a parcel
+
+
+
+-- Begin of funtions 
+-- function to get all parcels
+CREATE OR REPLACE FUNCTION GetAllParcels() 
+RETURNS parcels
+LANGUAGE SQL
+AS $$
+SELECT * FROM public.parcels;
+$$;
+-- end of a funtion to get all the parcels 
+SELECT GetAllParcels()
+-- example of calling a function in postgres 
+-- end of funtions 
+
+-- store procedure to soft delete 
+
+CREATE OR REPLACE PROCEDURE public.DeleteParcel(
+	IN parcelId uuid DEFAULT NULL::uuid
+
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+	UPDATE public.parcels
+	SET isdeleted = 'yes' WHERE id::character = parcelId::character;
+END;
+$BODY$
+-- end of stored procedure to soft delete parcel 
+CALL public.DeleteParcel('1a548da1-3f5f-4575-b7dc-e1a179ceaef4');
+-- example calling procedure to perform soft delete 
