@@ -100,22 +100,63 @@ END;
 $body$
 -- END OF SELECT ALL USERS 
 
--- select user 
-
--- CREATE OR REPLACE PROCEDURE public.selectAllUsers(
--- 	INOUT jsonOut json DEFAULT NULL::json 
--- )
--- LANGUAGE 'plpgsql'
--- AS $BODY$
--- BEGIN 
--- 	SELECT * FROM public.users;
--- 	RETURNING row_to_json(public.users.*)
---     INTO jsonOut;
--- END;
--- $BODY$;
-
--- end of select users 
 
 -- example of calling selectusers 
 CALL public.selectAllUsers();
 -- end of example calling users 
+
+
+-- procedure to soft delete user 
+CREATE OR REPLACE PROCEDURE public.DeleteParcel(
+	IN userId uuid DEFAULT NULL::uuid
+
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+	UPDATE public.users
+	SET isdeleted = 'yes' WHERE id::character = userId::character;
+END;
+$BODY$
+-- end of procedure to soft delete user 
+
+-- end of stored procedure to soft delete user
+CALL public.DeleteParcel('1a548da1-3f5f-4575-b7dc-e1a179ceaef4');
+-- example calling procedure to perform soft user
+
+
+-- function to check if the username exists 
+CREATE OR REPLACE FUNCTION GetUserByUsername(
+	IN theUsername character DEFAULT NULL::character
+)
+RETURNS  JSON
+LANGUAGE SQL
+AS $$
+	select array_to_json(array_agg(row_to_json(u)))
+	from(
+		SELECT id, email, username FROM public.users WHERE username = theUsername
+	) u;
+$$;
+-- efo function to check is the username exists 
+
+-- example running the function sheck username 
+SELECT public.GetUserByUsername('Daniel Maina')
+-- example running the function sheck username 
+
+-- function to check if the email already exists 
+CREATE OR REPLACE FUNCTION GetUserByEmail(
+	IN theUserEmail character DEFAULT NULL::character
+)
+RETURNS  JSON
+LANGUAGE SQL
+AS $$
+	select array_to_json(array_agg(row_to_json(u)))
+	from(
+		SELECT email FROM public.users WHERE email= theUserEmail
+	) u;
+$$;
+-- end of the function to check if the username exists 
+
+-- example running the function sheck email
+SELECT public.GetUserByEmail('example@example.com')
+-- example running the function sheck email

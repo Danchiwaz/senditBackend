@@ -142,6 +142,13 @@ SELECT GetAllParcels()
 -- example of calling a function in postgres 
 -- end of funtions 
 
+
+
+
+
+
+
+
 -- store procedure to soft delete 
 
 CREATE OR REPLACE PROCEDURE public.DeleteParcel(
