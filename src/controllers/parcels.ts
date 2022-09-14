@@ -1,5 +1,6 @@
 import { request, Request, Response } from "express";
 import pool from "../Database/config/config";
+import { parseDataToRow } from "../Helpers/DatabaseHelpers.ts/parseDbData";
 
 export interface ExtendedRequest extends Request {
   body: {
@@ -55,9 +56,7 @@ export const getallParcels = async (req: Request, res: Response) => {
       "SELECT * FROM parcels where isDeleted='no'"
     );
 
-    console.log(projects);
-
-    projects = projects.rows;
+    projects = parseDataToRow(projects);
     res.json(projects);
   } catch (error) {
     res.json({
@@ -108,9 +107,7 @@ export const updateParcel = async (req: ExtendedRequest, res: Response) => {
 export const deleteParcel = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const parcelForDelete = await pool.query(
-      `CALL public.DeleteParcel('${id}')`
-    );
+    await pool.query(`CALL public.DeleteParcel('${id}')`);
     res.json({
       message: "Parcel Deleted Successfully",
     });

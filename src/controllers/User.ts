@@ -2,7 +2,7 @@ import { request, Request, Response } from "express";
 import pool from "../Database/config/config";
 import bcrypt from "bcrypt";
 import { userRegistrationSchema } from "../Helpers/userValidation/userValidation";
-import parseDbData from "../utils/parseDbData";
+import parseDbData from "../Helpers/DatabaseHelpers.ts/parseDbData";
 
 export interface ExtendedRequest extends Request {
     body: {
