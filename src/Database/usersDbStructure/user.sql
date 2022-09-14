@@ -160,3 +160,55 @@ $$;
 -- example running the function sheck email
 SELECT public.GetUserByEmail('example@example.com')
 -- example running the function sheck email
+
+
+-- get single user by username 
+CREATE OR REPLACE FUNCTION GetUserByUsername(
+	IN theusername character DEFAULT NULL::character
+)
+RETURNS  JSON
+LANGUAGE SQL
+AS $$
+	select array_to_json(array_agg(row_to_json(u)))
+	from(
+		SELECT id,username,password ,role FROM public.users WHERE username= theusername
+	) u;
+$$;
+-- end of getting single user by username 
+
+-- example calling the funcion get sing username 
+SELECT public.GetUserByUsername('Danchiwaz')
+-- end of example to get single username 
+
+-- function to get all parcels where username is the receiver 
+CREATE OR REPLACE FUNCTION GetSingleUserParcelAsReceiver(
+	IN theusername character DEFAULT NULL::character
+)
+RETURNS  JSON
+LANGUAGE SQL
+AS $$
+	select array_to_json(array_agg(row_to_json(u)))
+	from(
+		SELECT * FROM public.parcels WHERE receiver= theusername
+	) u;
+$$;
+-- end of the function to get all parcels where username is the receiver 
+
+-- example running the function to get all parcels where username is the receiver
+SELECT public.GetSingleUserParcelAsReceiver('Kamau Kamatu')
+-- example running the function to get all parcels where username is the receiver
+
+
+-- function to get all parcels where username is the sender 
+CREATE OR REPLACE FUNCTION GetSingleUserParcelAsSender(
+	IN theusername character DEFAULT NULL::character
+)
+RETURNS  JSON
+LANGUAGE SQL
+AS $$
+	select array_to_json(array_agg(row_to_json(u)))
+	from(
+		SELECT * FROM public.parcels WHERE sender= theusername
+	) u;
+$$;
+-- end of the function to get all parcels where username is the sender 
