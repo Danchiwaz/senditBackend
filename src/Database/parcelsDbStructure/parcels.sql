@@ -9,7 +9,9 @@ CREATE TABLE parcels(
 	tolocation VARCHAR(255) NOT NULL,
 	status VARCHAR(255) DEFAULT 'onDelivery',
   trackingNo VARCHAR(255) NOT NULL,
-	isdeleted VARCHAR(255) DEFAULT 'no'
+	isdeleted VARCHAR(255) DEFAULT 'no',
+  pickdate VARCHAR(255) NOT NULL,
+  arrivaldate VARCHAR(255) NOT NULL,
 )
 -- end of create 
 
@@ -23,6 +25,8 @@ CREATE OR REPLACE PROCEDURE public.parcelSave(
     IN thefromlocation json DEFAULT NULL::json,
     IN thetolocation json DEFAULT NULL::json,
     IN theTrackingNo character varying DEFAULT NULL::character,
+    IN thepickingDate character varying DEFAULT NULL::character,
+    IN thearrivalDate character varying DEFAULT NULL::character,
     IN isUpdating integer DEFAULT NULL::integer,
     INOUT jsonOut json DEFAULT NULL::json
 )
@@ -37,7 +41,9 @@ BEGIN
         price,
         fromlocation,
         tolocation,
-        trackingNo
+        trackingNo,
+        pickdate,
+        arrivaldate
       )
       VALUES(
         thesender,
@@ -46,7 +52,9 @@ BEGIN
         theprice,
         thefromlocation,
         thetolocation,
-        theTrackingNo
+        theTrackingNo,
+        thepickingDate,
+        thearrivalDate
       )
       RETURNING row_to_json(public.parcels.*)
       INTO jsonOut;
@@ -60,7 +68,9 @@ BEGIN
          price = theprice,
          fromlocation = thefromlocation,
          tolocation = thetolocation,
-         trackingNo = thetrackingNo
+         trackingNo = thetrackingNo,
+         pickdate = thepickDate,
+         arrivaldate = thearrivalDate
       WHERE id =parcelId
       RETURNING row_to_json(public.parcels.*)
       INTO jsonOut;

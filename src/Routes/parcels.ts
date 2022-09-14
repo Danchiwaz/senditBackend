@@ -5,8 +5,8 @@ import { requireAuth } from "../middleware/authMiddleware";
 const parcelRouter = Router()
 
 
-parcelRouter.post("/", requireAuth, insertParcel);
-parcelRouter.get("/",requireAuth, getallParcels);
+parcelRouter.post("/", insertParcel);
+parcelRouter.get("/",getallParcels);
 parcelRouter.put("/:id", requireAuth, updateParcel);
 parcelRouter.delete("/:id", requireAuth, deleteParcel);
 

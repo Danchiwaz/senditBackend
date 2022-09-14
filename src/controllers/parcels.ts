@@ -1,3 +1,4 @@
+import { LogError } from "concurrently";
 import { request, Request, Response } from "express";
 import pool from "../Database/config/config";
 import { parseDataToRow } from "../Helpers/DatabaseHelpers.ts/parseDbData";
@@ -11,6 +12,8 @@ export interface ExtendedRequest extends Request {
     fromlocation: any;
     tolocation: any;
     trackingno: string;
+    pickdate: string;
+    arrivaldate: string;
   };
 }
 // function to insert a parcel using stored procedure
@@ -24,6 +27,8 @@ export const insertParcel = async (req: ExtendedRequest, res: Response) => {
       fromlocation,
       tolocation,
       trackingno,
+      pickdate,
+      arrivaldate
     } = req.body;
     const newParcel = await pool.query(`CALL public.parcelSave(
 	NULL,
@@ -33,11 +38,13 @@ export const insertParcel = async (req: ExtendedRequest, res: Response) => {
 	${price},
 	'${JSON.stringify(fromlocation)}',
 	'${JSON.stringify(tolocation)}',
-    '${trackingno}',
+ '${trackingno}',
+ '${pickdate}',
+ '${arrivaldate}',
 	0
 )`);
     console.log(newParcel);
-    res.json({
+    res.status(200).json({
       message: "Parcel Saved successfully",
     });
   } catch (error) {
@@ -52,12 +59,13 @@ export const insertParcel = async (req: ExtendedRequest, res: Response) => {
 // start of the function get all parcels in the database
 export const getallParcels = async (req: Request, res: Response) => {
   try {
-    let projects = await pool.query(
+    let parcels = await pool.query(
       "SELECT * FROM parcels where isDeleted='no'"
     );
 
-    projects = parseDataToRow(projects);
-    res.json(projects);
+    parcels = parseDataToRow(parcels);
+
+    res.json({ parcels: parcels });
   } catch (error) {
     res.json({
       error: error,
@@ -78,6 +86,8 @@ export const updateParcel = async (req: ExtendedRequest, res: Response) => {
       fromlocation,
       tolocation,
       trackingno,
+      pickdate,
+      arrivaldate
     } = req.body;
     const updatedParcel = await pool.query(
       `CALL public.parcelSave(
@@ -88,7 +98,9 @@ export const updateParcel = async (req: ExtendedRequest, res: Response) => {
 	${price},
 	'${JSON.stringify(fromlocation)}',
 	'${JSON.stringify(tolocation)}',
-    '${trackingno}',
+  '${trackingno}',
+  '${pickdate}',
+  '${arrivaldate}',
 	1
 )`
     );
