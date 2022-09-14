@@ -129,7 +129,7 @@ export const logoutUser = ( req:ExtendedRequest, res:Response) =>{
 
 
 // logic to get all parcels as a receiver
-export const getAllParelsAsSender = async (req:Request, res:Response) =>{
+export const getAllParelsAsReceiver = async (req:Request, res:Response) =>{
    try {
     const username = req.params.username
      let receivedParcels = await pool.query(
