@@ -1,7 +1,7 @@
 import { request, Request, Response } from "express";
 import pool from "../Database/config/config";
 import bcrypt from "bcrypt";
-import { userRegistrationSchema } from "../Helpers/userValidation/userValidation";
+import { userLoginSchema, userRegistrationSchema } from "../Helpers/userValidation/userValidation";
 import parseDbData, { parseSendReceivedParcels } from "../Helpers/DatabaseHelpers.ts/parseDbData";
 import { jwtTokens } from "../Helpers/jwtHelpers/jwt";
 
@@ -89,13 +89,14 @@ export const getAllUsers = async (req: ExtendedRequest, res: Response) => {
 export const loginUser = async (req: ExtendedRequest1, res: Response) => {
   try {
     const { username, password } = req.body;
+    const { error, value } = userLoginSchema.validate(req.body)
     let user = await pool.query(
-      `SELECT  public.GetUserByUsername('${username}')`
+      `SELECT  public.GetUserByUsername('${value.username}')`
     );
     user = parseDbData(user, "getuserbyusername");
 
   
-    const validPassword = await bcrypt.compare(password, user.password);
+    const validPassword = await bcrypt.compare(value.password, user.password);
    
     if(!validPassword){
         return res.status(401).json({
@@ -129,7 +130,7 @@ export const logoutUser = ( req:ExtendedRequest, res:Response) =>{
 
 
 // logic to get all parcels as a receiver
-export const getAllParelsAsSender = async (req:Request, res:Response) =>{
+export const getAllParelsAsReceiver = async (req:Request, res:Response) =>{
    try {
     const username = req.params.username
      let receivedParcels = await pool.query(
