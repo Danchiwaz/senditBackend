@@ -6,9 +6,9 @@ const userRoutes = Router()
 
 
 userRoutes.post("/", createUser);
-userRoutes.get("/", requireAuth, getAllUsers);
 userRoutes.post("/login", loginUser);
 userRoutes.get("/logout", logoutUser);
+userRoutes.get("/", requireAuth, getAllUsers);
 userRoutes.get( "/receivedParcels/:username",requireAuth,getAllParelsAsReceiver);
 userRoutes.get("/sentParcels/:username", requireAuth, getAllParcelsAsSender);
 

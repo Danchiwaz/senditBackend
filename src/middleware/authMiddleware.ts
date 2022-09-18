@@ -13,18 +13,18 @@ export const requireAuth = (
       process.env.USER_ACCESS_TOKEN as string,
       (err: any, decodedToken: any) => {
         if (err) {
-          return res.json({
+          return res.status(401).json({
             message: "You are not allowed to access this Page",
           });
         } else {
-         console.log(decodedToken);
+        //  console.log(decodedToken);
          
           next();
         }
       }
     );
   } else {
-    return res.json({
+    return res.status(401).json({
       message: "You are not allowed to access this Page",
     });
   }

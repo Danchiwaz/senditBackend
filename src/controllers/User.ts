@@ -2,7 +2,7 @@ import { request, Request, Response } from "express";
 import pool from "../Database/config/config";
 import bcrypt from "bcrypt";
 import { userLoginSchema, userRegistrationSchema } from "../Helpers/userValidation/userValidation";
-import parseDbData, { parseSendReceivedParcels } from "../Helpers/DatabaseHelpers.ts/parseDbData";
+import parseDbData, { parseSendReceivedParcels } from "../Helpers/DatabaseHelpers/parseDbData";
 import { jwtTokens } from "../Helpers/jwtHelpers/jwt";
 
 export interface ExtendedRequest extends Request {
@@ -41,7 +41,7 @@ export const createUser = async (req: ExtendedRequest, res: Response) => {
     const result = parseDbData(results, "getuserbyusername");
 
     if (result) {
-      return res.json({
+      return res.status(409).json({
         message: "username already exists",
       });
     }
@@ -56,13 +56,13 @@ export const createUser = async (req: ExtendedRequest, res: Response) => {
         0
         )`);
 
-    res.json({
+    res.status(200).json({
       message: "You have successfully registered",
     });
   } catch (error) {
     console.log(error);
 
-    res.json({
+    res.status(409).json({
       message: "Email already exist",
     });
   }
@@ -88,8 +88,12 @@ export const getAllUsers = async (req: ExtendedRequest, res: Response) => {
 // logic to login user
 export const loginUser = async (req: ExtendedRequest1, res: Response) => {
   try {
-    const { username, password } = req.body;
     const { error, value } = userLoginSchema.validate(req.body)
+     if (error) {
+       return res.status(400).json({
+         error: error.details[0].message,
+       });
+     }
     let user = await pool.query(
       `SELECT  public.GetUserByUsername('${value.username}')`
     );
@@ -108,7 +112,7 @@ export const loginUser = async (req: ExtendedRequest1, res: Response) => {
     let user_role = user.role;
     let user_id = user.id
 
-    res.json({
+    res.status(200).json({
         token:token,
         username:user_name,
         role:user_role,
@@ -141,7 +145,7 @@ export const getAllParelsAsReceiver = async (req:Request, res:Response) =>{
        receivedParcels
      })
    } catch (error) {
-       res.json({
+       res.status(500).json({
         error
        })
    }

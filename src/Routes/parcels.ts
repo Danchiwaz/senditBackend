@@ -1,14 +1,16 @@
 import { Router } from "express";
-import { deleteParcel, getallParcels, insertParcel, updateParcel } from "../controllers/parcels";
+import { deleteParcel, getAllClientsFromTheDb, getallParcels, insertParcel, updateParcel, updateParcelOnDelivery } from "../controllers/parcels";
 import { requireAuth } from "../middleware/authMiddleware";
 
 const parcelRouter = Router()
 
 
-parcelRouter.post("/", insertParcel);
-parcelRouter.get("/",getallParcels);
-parcelRouter.put("/:id", requireAuth, updateParcel);
+parcelRouter.post("/", requireAuth,insertParcel);
+parcelRouter.get("/", requireAuth,getallParcels);
+parcelRouter.put("/:id", requireAuth,updateParcel);
+parcelRouter.get("/clients", requireAuth,getAllClientsFromTheDb);
 parcelRouter.delete("/:id", requireAuth, deleteParcel);
+parcelRouter.put("/delivered/:id", requireAuth, updateParcelOnDelivery);
 
 
 

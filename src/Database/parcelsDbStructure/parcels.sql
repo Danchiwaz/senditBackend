@@ -97,13 +97,15 @@ CALL public.parcelSave(
 
 -- updating using procedure --- Basically just add the id , this will check if the id exists
 CALL public.parcelSave(
-	'df439989-19ac-4677-a7a9-2edb2d2cba1c',
+	'ca67e8c0-7da0-4095-963d-3053f2007dfa',
 	'Maina',
 	'Kamau',
 	'12',
 	24,
 	'{"address":"Nakuru","latitude":"12","longitude":"32"}',
 	'{"address":"Nakuru","latitude":"12","longitude":"32"}',
+  '2022-09-16',
+  '2022-09-16'
 	1
 )
 
@@ -175,3 +177,38 @@ $BODY$
 -- end of stored procedure to soft delete parcel 
 CALL public.DeleteParcel('1a548da1-3f5f-4575-b7dc-e1a179ceaef4');
 -- example calling procedure to perform soft delete 
+
+
+-- procedure to update parcel on delivery 
+CREATE OR REPLACE PROCEDURE public.UpdateParcelOnDelivery(
+	IN parcelId uuid DEFAULT NULL::uuid
+
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+	UPDATE public.parcels
+	SET status = 'delivered', received=True WHERE id::character = parcelId::character AND sent= True;
+END;
+$BODY$
+
+CALL public.UpdateParcelOnDelivery('')
+
+
+
+
+
+-- end of procedure to update parcel on delivery 
+
+
+-- getting all users in the database 
+CREATE OR REPLACE FUNCTION GetAllUsersInTheDb()
+RETURNS  JSON
+LANGUAGE SQL
+AS $$
+	select array_to_json(array_agg(row_to_json(u)))
+	from(
+		SELECT * FROM public.users
+	) u;
+$$;
+-- end of the funtion to get all users in the database 
