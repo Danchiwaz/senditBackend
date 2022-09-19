@@ -212,3 +212,28 @@ AS $$
 	) u;
 $$;
 -- end of the funtion to get all users in the database 
+
+-- function to return all parcels on delivery 
+CREATE OR REPLACE FUNCTION GetAllParcelsOnDelivery()
+RETURNS  JSON
+LANGUAGE SQL
+AS $$
+	select array_to_json(array_agg(row_to_json(u)))
+	from(
+		SELECT * FROM public.parcels WHERE status = 'onDelivery'
+	) u;
+$$;
+-- end of the function to get all parcels on delivery 
+
+
+-- function to get all delivered parcels 
+CREATE OR REPLACE FUNCTION GetAllDeliveredParcels()
+RETURNS  JSON
+LANGUAGE SQL
+AS $$
+	select array_to_json(array_agg(row_to_json(u)))
+	from(
+		SELECT * FROM public.parcels WHERE status = 'delivered'
+	) u;
+$$;
+-- end of function to get all delivered parcels 

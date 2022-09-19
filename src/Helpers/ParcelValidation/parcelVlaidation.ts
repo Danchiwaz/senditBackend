@@ -1,6 +1,5 @@
 import joi from "joi";
 
-
 export const ParcelSavingSchema = joi.object({
   sender: joi.string().required(),
   receiver: joi.string().required(),
@@ -11,7 +10,3 @@ export const ParcelSavingSchema = joi.object({
   pickdate: joi.string().required(),
   arrivaldate: joi.string().required(),
 });
-
-
-
-

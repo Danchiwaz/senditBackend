@@ -1,8 +1,13 @@
 import { request, Request, Response } from "express";
 import pool from "../Database/config/config";
 import bcrypt from "bcrypt";
-import { userLoginSchema, userRegistrationSchema } from "../Helpers/userValidation/userValidation";
-import parseDbData, { parseSendReceivedParcels } from "../Helpers/DatabaseHelpers/parseDbData";
+import {
+  userLoginSchema,
+  userRegistrationSchema,
+} from "../Helpers/userValidation/userValidation";
+import parseDbData, {
+  parseSendReceivedParcels,
+} from "../Helpers/DatabaseHelpers/parseDbData";
 import { jwtTokens } from "../Helpers/jwtHelpers/jwt";
 
 export interface ExtendedRequest extends Request {
@@ -88,86 +93,89 @@ export const getAllUsers = async (req: ExtendedRequest, res: Response) => {
 // logic to login user
 export const loginUser = async (req: ExtendedRequest1, res: Response) => {
   try {
-    const { error, value } = userLoginSchema.validate(req.body)
-     if (error) {
-       return res.status(400).json({
-         error: error.details[0].message,
-       });
-     }
+    const { error, value } = userLoginSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        error: error.details[0].message,
+      });
+    }
     let user = await pool.query(
       `SELECT  public.GetUserByUsername('${value.username}')`
     );
     user = parseDbData(user, "getuserbyusername");
 
-  
     const validPassword = await bcrypt.compare(value.password, user.password);
-   
-    if(!validPassword){
-        return res.status(401).json({
-            message: "Invalid credentials"
-        })
+
+    if (!validPassword) {
+      return res.status(401).json({
+        message: "Invalid credentials",
+      });
     }
-    let token = jwtTokens(user)
+    let token = jwtTokens(user);
     let user_name = user.username;
     let user_role = user.role;
-    let user_id = user.id
+    let user_id = user.id;
 
     res.status(200).json({
-        token:token,
-        username:user_name,
-        role:user_role,
-        user_id
-    })
+      token: token,
+      username: user_name,
+      role: user_role,
+      user_id,
+    });
   } catch (error) {
-    return res.json({
-      error:"Invalid credentials",
+    return res.status(409).json({
+      error: "Invalid credentials",
     });
   }
 };
 // end of logic to login user
 
-// logic to logout the user 
-export const logoutUser = ( req:ExtendedRequest, res:Response) =>{
-    localStorage.removeItem("token");
-}
-// end of logic to login user 
-
+// logic to logout the user
+export const logoutUser = (req: ExtendedRequest, res: Response) => {
+  localStorage.removeItem("token");
+};
+// end of logic to login user
 
 // logic to get all parcels as a receiver
-export const getAllParelsAsReceiver = async (req:Request, res:Response) =>{
-   try {
-    const username = req.params.username
-     let receivedParcels = await pool.query(
-       `SELECT public.GetSingleUserParcelAsReceiver('${username}')`
-     );
-     receivedParcels = parseSendReceivedParcels(receivedParcels,"getsingleuserparcelasreceiver");
-     return res.status(200).json({
-       receivedParcels
-     })
-   } catch (error) {
-       res.status(500).json({
-        error
-       })
-   }
-}
+export const getAllParelsAsReceiver = async (req: Request, res: Response) => {
+  try {
+    const username = req.params.username;
+    let receivedParcels = await pool.query(
+      `SELECT public.GetSingleUserParcelAsReceiver('${username}')`
+    );
+    receivedParcels = parseSendReceivedParcels(
+      receivedParcels,
+      "getsingleuserparcelasreceiver"
+    );
+    return res.status(200).json({
+      receivedParcels,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error,
+    });
+  }
+};
 // end of the logic to get all parcels as a receiver
 
-
-// logic to get all parcels where user is the sender 
-export const getAllParcelsAsSender = async (req:Request, res: Response) =>{
- try {
+// logic to get all parcels where user is the sender
+export const getAllParcelsAsSender = async (req: Request, res: Response) => {
+  try {
     const username = req.params.username;
-    let  sentParcels = await pool.query(
+    let sentParcels = await pool.query(
       `SELECT public.GetSingleUserParcelAsSender('${username}')`
     );
-    sentParcels = parseSendReceivedParcels(sentParcels, 'getsingleuserparcelassender');
+    sentParcels = parseSendReceivedParcels(
+      sentParcels,
+      "getsingleuserparcelassender"
+    );
     return res.status(200).json({
-      sentParcels
+      sentParcels,
     });
- } catch (error) {
-  return res.status(500).json({
-    error
-  });
- }
-}
-// end of the logic to get all parcels where user is the sender 
+  } catch (error) {
+    return res.status(500).json({
+      error,
+    });
+  }
+};
+// end of the logic to get all parcels where user is the sender

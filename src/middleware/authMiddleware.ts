@@ -17,8 +17,8 @@ export const requireAuth = (
             message: "You are not allowed to access this Page",
           });
         } else {
-        //  console.log(decodedToken);
-         
+          // console.log(decodedToken);
+
           next();
         }
       }

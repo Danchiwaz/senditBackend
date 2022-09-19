@@ -1,5 +1,5 @@
 import { LogError } from "concurrently";
-import { request, Request, Response } from "express";
+import { json, request, Request, Response } from "express";
 import pool from "../Database/config/config";
 import parseDbData, {
   parseDataToRow,
@@ -21,7 +21,6 @@ export interface ExtendedRequest extends Request {
   };
 }
 // function to insert a parcel using stored procedure
-
 
 export const insertParcel = async (req: ExtendedRequest, res: Response) => {
   try {
@@ -73,10 +72,6 @@ export const getallParcels = async (req: Request, res: Response) => {
 };
 // end  of the function get all parcels in the database
 
-
-
-
-
 // start of the function update a specific parcel in the database
 export const updateParcel = async (req: ExtendedRequest, res: Response) => {
   try {
@@ -126,9 +121,7 @@ export const updateParcelOnDelivery = async (req: Request, res: Response) => {
 };
 // end of the function to update the parcel
 
-
 // start of the function to soft delete a parcel
-
 
 export const deleteParcel = async (req: Request, res: Response) => {
   try {
@@ -144,8 +137,40 @@ export const deleteParcel = async (req: Request, res: Response) => {
   }
 };
 
-
 // end of the function to update a parcel using soft delete
+// get all parcels on delivery
+export const getAllParcelsOnDelivery = async (req: Request, res: Response) => {
+  try {
+    let allParcelsOnDelivery = await pool.query(
+      `SELECT public.GetAllParcelsOnDelivery()`
+    );
+    allParcelsOnDelivery = parseSendReceivedParcels(
+      allParcelsOnDelivery,
+      "getallparcelsondelivery"
+    );
+    return res.status(200).json(allParcelsOnDelivery);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+// end of the parcels on delivery
+
+// gettinG ALL delivered parcels
+export const getAllDeliveredParcels = async (req: Request, res: Response) => {
+  try {
+    let allDeliveredParcels = await pool.query(
+      `SELECT public.GetAllDeliveredParcels()`
+    );
+    allDeliveredParcels = parseSendReceivedParcels(
+      allDeliveredParcels,
+      "getalldeliveredparcels"
+    );
+    return res.status(200).json(allDeliveredParcels);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+// end of getting all delivered parcels
 
 // function to getll all users from the database
 
