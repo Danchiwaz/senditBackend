@@ -102,9 +102,6 @@ export const updateParcel = async (req: ExtendedRequest, res: Response) => {
     });
   }
 };
-// start of the function update a specific parcel in the database
-
-// function to update parcel on delivery
 
 // end of the function to update parcel on delivery
 
@@ -165,6 +162,10 @@ export const getAllDeliveredParcels = async (req: Request, res: Response) => {
       allDeliveredParcels,
       "getalldeliveredparcels"
     );
+    allDeliveredParcels.forEach((parcel: any) => {
+      parcel.fromlocation = JSON.parse(parcel.fromlocation);
+      parcel.tolocation = JSON.parse(parcel.tolocation);
+    });
     return res.status(200).json(allDeliveredParcels);
   } catch (error) {
     return res.status(500).json(error);

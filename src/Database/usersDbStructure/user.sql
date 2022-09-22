@@ -212,3 +212,17 @@ AS $$
 	) u;
 $$;
 -- end of the function to get all parcels where username is the sender 
+
+-- getting all parcels 
+CREATE OR REPLACE FUNCTION GetSingleUserParcelAsSender(
+	IN theusername character DEFAULT NULL::character
+)
+RETURNS  JSON
+LANGUAGE SQL
+AS $$
+	select array_to_json(array_agg(row_to_json(u)))
+	from(
+		SELECT * FROM public.parcels WHERE sender= theusername OR receiver= theusername
+	) u;
+$$;
+-- end of getting all parcels 

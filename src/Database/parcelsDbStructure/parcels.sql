@@ -188,7 +188,19 @@ LANGUAGE 'plpgsql'
 AS $BODY$
 BEGIN
 	UPDATE public.parcels
-	SET status = 'delivered', received=True WHERE id::character = parcelId::character AND sent= True;
+	SET status = 'delivered',sent = True, received= True WHERE id = parcelId;
+END;
+$BODY$
+
+CREATE OR REPLACE PROCEDURE public.DeleteParcel(
+	IN parcelId uuid DEFAULT NULL::uuid
+
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+	UPDATE public.parcels
+	SET isdeleted = 'yes' WHERE id::character = parcelId::character;
 END;
 $BODY$
 
@@ -237,3 +249,6 @@ AS $$
 	) u;
 $$;
 -- end of function to get all delivered parcels 
+
+
+

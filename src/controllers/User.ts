@@ -65,8 +65,6 @@ export const createUser = async (req: ExtendedRequest, res: Response) => {
       message: "You have successfully registered",
     });
   } catch (error) {
-    console.log(error);
-
     res.status(409).json({
       message: "Email already exist",
     });
@@ -179,3 +177,14 @@ export const getAllParcelsAsSender = async (req: Request, res: Response) => {
   }
 };
 // end of the logic to get all parcels where user is the sender
+
+export const getAllUserParcels = async (req:Request, res:Response) =>{
+  try {
+    const username = req.params.username;
+    let allparcels = await pool.query(`SELECT public.GetAllUserParcels('${username}')`);
+    allparcels = parseSendReceivedParcels(allparcels, "getalluserparcels");
+    return res.status(200).json(allparcels)
+  } catch (error) {
+    return res.status(500).json(error)
+  }
+}
